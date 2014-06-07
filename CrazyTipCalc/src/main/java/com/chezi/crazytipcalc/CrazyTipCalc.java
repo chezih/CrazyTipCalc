@@ -7,6 +7,8 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 
 public class CrazyTipCalc extends ActionBarActivity {
@@ -22,6 +24,10 @@ public class CrazyTipCalc extends ActionBarActivity {
     EditText billBeforeTipET;
     EditText tipAmountET;
     EditText finalBillET;
+
+    TextView tipValueText;
+
+    SeekBar tipSeekBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +47,61 @@ public class CrazyTipCalc extends ActionBarActivity {
         billBeforeTipET = (EditText) findViewById(R.id.billEditText);
         tipAmountET = (EditText) findViewById(R.id.tipEditText);
         finalBillET = (EditText) findViewById(R.id.finalBillEditText);
+        tipSeekBar = (SeekBar) findViewById(R.id.tipSeekBar);
+        tipValueText = (TextView) findViewById(R.id.tipTextView);
+
+        tipSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+                try {
+                    tipAmount =(tipSeekBar.getProgress())*0.01;
+                } catch (NumberFormatException e) {
+                    tipAmount = .15;
+                }
+
+                updateTipAndFinalBill();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        updateTipAndFinalBill();
 
         billBeforeTipET.addTextChangedListener(billBeforeTipListener);
+
+        tipAmountET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                try {
+                    tipAmount = Double.parseDouble(charSequence.toString());
+                } catch (NumberFormatException e) {
+                    tipAmount = .15;
+
+                }
+
+                updateTipAndFinalBill();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
     private TextWatcher billBeforeTipListener = new TextWatcher() {
@@ -53,11 +112,11 @@ public class CrazyTipCalc extends ActionBarActivity {
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                try {
-                    billBeforeTip = Double.parseDouble(charSequence.toString());
-                }catch (NumberFormatException e){
-                    billBeforeTip=0.0;
-                }
+            try {
+                billBeforeTip = Double.parseDouble(charSequence.toString());
+            } catch (NumberFormatException e) {
+                billBeforeTip = 0.0;
+            }
 
             updateTipAndFinalBill();
         }
@@ -69,22 +128,22 @@ public class CrazyTipCalc extends ActionBarActivity {
     };
 
 
-    private void updateTipAndFinalBill()
-    {
-        double tipAmount = Double.parseDouble(tipAmountET.getText().toString());
+    private void updateTipAndFinalBill() {
+        tipAmountET.setText(String.format("%.02f", tipAmount));
+        tipValueText.setText(String.format("%.02f", tipAmount));
+        //double tipAmount = Double.parseDouble(tipAmountET.getText().toString());
 
-        double finalBill= billBeforeTip+(tipAmount*billBeforeTip);
+        double finalBill = billBeforeTip + (tipAmount * billBeforeTip);
 
-        finalBillET.setText(String.format("%.02f",finalBill));
+        finalBillET.setText(String.format("%.02f", finalBill));
     }
 
-    protected  void  onSaveInstanceState(Bundle outState)
-    {
+    protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putDouble(TOTAL_BILL,finalBill);
-        outState.putDouble(CURRENT_TIP,tipAmount);
-        outState.putDouble(BILL_WITHOUT_TIP,billBeforeTip);
+        outState.putDouble(TOTAL_BILL, finalBill);
+        outState.putDouble(CURRENT_TIP, tipAmount);
+        outState.putDouble(BILL_WITHOUT_TIP, billBeforeTip);
     }
 
     @Override
