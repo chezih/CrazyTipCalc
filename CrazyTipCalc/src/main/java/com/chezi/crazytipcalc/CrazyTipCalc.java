@@ -48,7 +48,12 @@ public class CrazyTipCalc extends ActionBarActivity {
         tipAmountET = (EditText) findViewById(R.id.tipEditText);
         finalBillET = (EditText) findViewById(R.id.finalBillEditText);
         tipSeekBar = (SeekBar) findViewById(R.id.tipSeekBar);
-        tipValueText = (TextView) findViewById(R.id.tipTextView);
+        tipValueText = (TextView) findViewById(R.id.tipTextViewValue);
+
+        //initial values
+        tipValueText.setText(String.format("%.02f", tipAmount));
+        tipSeekBar.setProgress((int)(tipAmount*100));
+        tipAmountET.setText(String.format("%.02f", tipAmount));
 
         tipSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -57,9 +62,10 @@ public class CrazyTipCalc extends ActionBarActivity {
                 try {
                     tipAmount =(tipSeekBar.getProgress())*0.01;
                 } catch (NumberFormatException e) {
-                    tipAmount = .15;
+                    tipAmount = 0.0;
                 }
-
+                tipAmountET.setText(String.format("%.02f", tipAmount));
+                tipValueText.setText(String.format("%.02f", tipAmount));
                 updateTipAndFinalBill();
             }
 
@@ -73,6 +79,8 @@ public class CrazyTipCalc extends ActionBarActivity {
 
             }
         });
+
+
 
         updateTipAndFinalBill();
 
@@ -90,10 +98,11 @@ public class CrazyTipCalc extends ActionBarActivity {
                 try {
                     tipAmount = Double.parseDouble(charSequence.toString());
                 } catch (NumberFormatException e) {
-                    tipAmount = .15;
+                    tipAmount = 0.0;
 
                 }
-
+                tipValueText.setText(String.format("%.02f", tipAmount));
+                tipSeekBar.setProgress((int)(tipAmount*100));
                 updateTipAndFinalBill();
             }
 
@@ -129,9 +138,7 @@ public class CrazyTipCalc extends ActionBarActivity {
 
 
     private void updateTipAndFinalBill() {
-        tipAmountET.setText(String.format("%.02f", tipAmount));
-        tipValueText.setText(String.format("%.02f", tipAmount));
-        //double tipAmount = Double.parseDouble(tipAmountET.getText().toString());
+
 
         double finalBill = billBeforeTip + (tipAmount * billBeforeTip);
 
